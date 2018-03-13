@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeamCarving", "SeamCarving3\SeamCarving.csproj", "{91F954DD-DB98-4BA0-8B8C-2B2B7CAA0F1F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeamCarving", "SeamCarving\SeamCarving.csproj", "{91F954DD-DB98-4BA0-8B8C-2B2B7CAA0F1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

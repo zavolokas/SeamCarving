@@ -15,6 +15,7 @@ namespace SeamCarving2
   //      [Benchmark]
         public static void Remove()
         {
+            const int toRemove = 100;
 
             //using (var imageBitmap = new Bitmap(@"..\..\..\images\Valve_original.png"))
             using (var imageBitmap = new Bitmap(@"..\..\..\images\t009.jpg"))
@@ -72,7 +73,7 @@ namespace SeamCarving2
                 // TODO: while not removed
                 // TODO: Add component to the energy map or image with the markup
                 // TODO: Convert the markup to Area and check whether it was reduced if it is not 3 times in a row - stop.
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < toRemove; i++)
                 {
                     // find min energy sequence
                     FillMinSequence(xes, energyMap, imageArea);
@@ -90,13 +91,22 @@ namespace SeamCarving2
 
                 if (true)
                 {
-                    image1.FromRgbToBitmap()
-                        .SaveTo("..\\..\\out2.png", ImageFormat.Png);
+                    var newWidth = image1.Width - toRemove;
+                    var pixels = Enumerable.Repeat(0.0, newWidth * image1.Height * image1.NumberOfComponents).ToArray();
+                    var image3 = new ZsImage(pixels, newWidth, image1.Height, image1.NumberOfComponents);
+                    var destArea = Area2D.Create(0, 0, image3.Width, image3.Height);
+                    var srcArea = Area2D.Create(0, 0, image1.Width, image1.Height);
 
-                    energyMap.FromGrayToRgb()
+                    image3
+                        .CopyFromImage(destArea, image1, srcArea)
                         .FromRgbToBitmap()
-                        .SaveTo("..\\..\\out1.png", ImageFormat.Png)
+                        .SaveTo("..\\..\\out2.png", ImageFormat.Png)
                         .ShowFile();
+
+                    //energyMap.FromGrayToRgb()
+                    //    .FromRgbToBitmap()
+                    //    .SaveTo("..\\..\\out1.png", ImageFormat.Png)
+                    //    .ShowFile();
                 }
             }
         }
