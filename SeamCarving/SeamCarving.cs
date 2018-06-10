@@ -18,13 +18,13 @@ namespace SeamCarving2
             const int toRemove = 100;
 
             //using (var imageBitmap = new Bitmap(@"..\..\..\images\Valve_original.png"))
-            using (var imageBitmap = new Bitmap(@"..\..\..\images\t009.jpg"))
-            using (var protectBitmap = new Bitmap(@"..\..\..\images\p009.png"))
-            using (var removeBitmap = new Bitmap(@"..\..\..\images\m009.png"))
+            using (var imageBitmap = new Bitmap(@"..\..\..\images\t001.png"))
+            //using (var protectBitmap = new Bitmap(@"..\..\..\images\p009.png"))
+            using (var removeBitmap = new Bitmap(@"..\..\..\images\m001.png"))
             //using (var imageBitmap = new Bitmap(@"..\..\..\images\sc1.png"))
             {
                 var imageArea = Area2D.Create(0, 0, imageBitmap.Width, imageBitmap.Height);
-                var protectArea = protectBitmap.ToArea();
+                var protectArea = Area2D.Empty;// protectBitmap.ToArea();
                 var removeArea = removeBitmap.ToArea();
 
                 // TODO: Sobel in one go
