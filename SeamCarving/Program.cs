@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
+using Zavolokas.GdiExtensions;
+using Zavolokas.Utils.Processes;
 //using BenchmarkDotNet.Running;
 
 namespace SeamCarving2
@@ -9,8 +13,20 @@ namespace SeamCarving2
     {
         static void Main(string[] args)
         {
-            //var summary = BenchmarkRunner.Run<SeamCarving>();
-            SeamCarving.Remove();
+            var seamCarving = new SeamCarving();
+
+            //using (var imageBitmap = new Bitmap(@"..\..\..\images\Valve_original.png"))
+            using (var imageBitmap = new Bitmap(@"..\..\..\images\t001.png"))
+            //using (var protectBitmap = new Bitmap(@"..\..\..\images\p009.png"))
+            using (var removeBitmap = new Bitmap(@"..\..\..\images\m001.png"))
+            //using (var imageBitmap = new Bitmap(@"..\..\..\images\sc1.png"))
+            {
+                var result = seamCarving.Remove(imageBitmap, removeBitmap);
+
+                result
+                    .SaveTo("..\\..\\out2.png", ImageFormat.Png)
+                    .ShowFile();
+            }
         }
     }
 }

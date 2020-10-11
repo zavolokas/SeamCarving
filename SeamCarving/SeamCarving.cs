@@ -1,117 +1,103 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
-//using BenchmarkDotNet.Attributes;
-using Zavolokas.GdiExtensions;
 using Zavolokas.Structures;
-using Zavolokas.Utils.Processes;
 
 namespace SeamCarving2
 {
     public class SeamCarving
     {
-  //      [Benchmark]
-        public static void Remove()
+
+
+        public Bitmap Remove(Bitmap imageBitmap, Bitmap removeBitmap)
         {
             const int toRemove = 100;
 
-            //using (var imageBitmap = new Bitmap(@"..\..\..\images\Valve_original.png"))
-            using (var imageBitmap = new Bitmap(@"..\..\..\images\t001.png"))
-            //using (var protectBitmap = new Bitmap(@"..\..\..\images\p009.png"))
-            using (var removeBitmap = new Bitmap(@"..\..\..\images\m001.png"))
-            //using (var imageBitmap = new Bitmap(@"..\..\..\images\sc1.png"))
-            {
-                var imageArea = Area2D.Create(0, 0, imageBitmap.Width, imageBitmap.Height);
-                var protectArea = Area2D.Empty;// protectBitmap.ToArea();
-                var removeArea = removeBitmap.ToArea();
+            var imageArea = Area2D.Create(0, 0, imageBitmap.Width, imageBitmap.Height);
+            var protectArea = Area2D.Empty;// protectBitmap.ToArea();
+            var removeArea = removeBitmap.ToArea();
 
-                // TODO: Sobel in one go
-                var filterX = new double[]
-                {
+            // TODO: Sobel in one go
+            var filterX = new double[]
+            {
                     +1, 0, -1,
                     +2, 0, -2,
                     +1, 0, -1
-                };
+            };
 
-                var filterY = new double[]
-                {
+            var filterY = new double[]
+            {
                     +1, +2, +1,
                     0,  0,  0,
                     -1, -2, -1
-                };
+            };
 
-                var image1 = imageBitmap
-                    .ToRgbImage();
+            var image1 = imageBitmap
+                .ToRgbImage();
 
-                var energyMap = imageBitmap
-                    .ToRgbImage()
-                    .FromRgbToGray();
+            var energyMap = imageBitmap
+                .ToRgbImage()
+                .FromRgbToGray();
 
-                var image2 = energyMap.Clone();
+            var image2 = energyMap.Clone();
 
-                // Apply Sobol operator
-                energyMap.Filter(imageArea, filterX, 3, 3);
-                image2.Filter(imageArea, filterY, 3, 3);
-                energyMap.MergeImage(image2);
+            // Apply Sobol operator
+            energyMap.Filter(imageArea, filterX, 3, 3);
+            image2.Filter(imageArea, filterY, 3, 3);
+            energyMap.MergeImage(image2);
 
-                // adjust energy
-                energyMap.NormalizeWeights(energyMap.Height, energyMap.Height * 2, imageArea);
-                //energyMap.NormalizeWeights(0, 1, imageArea);
-                //energyMap.NormalizeWeights(1, 3, imageArea);
+            // adjust energy
+            energyMap.NormalizeWeights(energyMap.Height, energyMap.Height * 2, imageArea);
+            //energyMap.NormalizeWeights(0, 1, imageArea);
+            //energyMap.NormalizeWeights(1, 3, imageArea);
 
-                energyMap.SetComponentsValues(protectArea, new[] { 1.0 }, 0);
-                energyMap.SetComponentsValues(removeArea, new[] { 0.0 }, 0);
+            energyMap.SetComponentsValues(protectArea, new[] { 1.0 }, 0);
+            energyMap.SetComponentsValues(removeArea, new[] { 0.0 }, 0);
 
-                // build energy map
-                energyMap.ConvertToEnergyMap(imageArea);
-                //energyMap.NormalizeEnergyMap(imageArea);
+            // build energy map
+            energyMap.ConvertToEnergyMap(imageArea);
+            //energyMap.NormalizeEnergyMap(imageArea);
 
-                int[] xes = new int[energyMap.Height];
+            int[] xes = new int[energyMap.Height];
 
-                // TODO: while not removed
-                // TODO: Add component to the energy map or image with the markup
-                // TODO: Convert the markup to Area and check whether it was reduced if it is not 3 times in a row - stop.
-                for (int i = 0; i < toRemove; i++)
-                {
-                    // find min energy sequence
-                    FillMinSequence(xes, energyMap, imageArea);
-                    // remove max col / row from photo &energy map
-                    Update(energyMap.PixelsData, xes, imageArea, image1.Width, image1.Height, 1);
+            // TODO: while not removed
+            // TODO: Add component to the energy map or image with the markup
+            // TODO: Convert the markup to Area and check whether it was reduced if it is not 3 times in a row - stop.
+            for (int i = 0; i < toRemove; i++)
+            {
+                // find min energy sequence
+                FillMinSequence(xes, energyMap, imageArea);
+                // remove max col / row from photo &energy map
+                Update(energyMap.PixelsData, xes, imageArea, image1.Width, image1.Height, 1);
 
-                    //RemoveSequence(xes, energyMap);
-                    RemoveSequence(xes, image1);
+                //RemoveSequence(xes, energyMap);
+                RemoveSequence(xes, image1);
 
-                    imageArea = Area2D.Create(imageArea.Bound.X, imageArea.Bound.Y, imageArea.Bound.Width - 1, imageArea.Bound.Height);
-                }
-
-                // TODO: restor with the protection
-                // TODO: restor without the protection
-
-                if (true)
-                {
-                    var newWidth = image1.Width - toRemove;
-                    var pixels = Enumerable.Repeat(0.0, newWidth * image1.Height * image1.NumberOfComponents).ToArray();
-                    var image3 = new ZsImage(pixels, newWidth, image1.Height, image1.NumberOfComponents);
-                    var destArea = Area2D.Create(0, 0, image3.Width, image3.Height);
-                    var srcArea = Area2D.Create(0, 0, image1.Width, image1.Height);
-
-                    image3
-                        .CopyFromImage(destArea, image1, srcArea)
-                        .FromRgbToBitmap()
-                        .SaveTo("..\\..\\out2.png", ImageFormat.Png)
-                        .ShowFile();
-
-                    //energyMap.FromGrayToRgb()
-                    //    .FromRgbToBitmap()
-                    //    .SaveTo("..\\..\\out1.png", ImageFormat.Png)
-                    //    .ShowFile();
-                }
+                imageArea = Area2D.Create(imageArea.Bound.X, imageArea.Bound.Y, imageArea.Bound.Width - 1, imageArea.Bound.Height);
             }
+
+            // TODO: restor with the protection
+            // TODO: restor without the protection
+
+            var newWidth = image1.Width - toRemove;
+            var pixels = Enumerable.Repeat(0.0, newWidth * image1.Height * image1.NumberOfComponents).ToArray();
+            var image3 = new ZsImage(pixels, newWidth, image1.Height, image1.NumberOfComponents);
+            var destArea = Area2D.Create(0, 0, image3.Width, image3.Height);
+            var srcArea = Area2D.Create(0, 0, image1.Width, image1.Height);
+
+            return image3
+                .CopyFromImage(destArea, image1, srcArea)
+                .FromRgbToBitmap();
+                
+
+            //energyMap.FromGrayToRgb()
+            //    .FromRgbToBitmap()
+            //    .SaveTo("..\\..\\out1.png", ImageFormat.Png)
+            //    .ShowFile();
         }
 
-        private static void RemoveSequence(int[] xIndecies, ZsImage image)
+        private void RemoveSequence(int[] xIndecies, ZsImage image)
         {
             if (xIndecies == null)
                 throw new ArgumentNullException(nameof(xIndecies));
@@ -132,7 +118,7 @@ namespace SeamCarving2
             }
         }
 
-        private static unsafe void FillMinSequence(int[] minSequence, ZsImage energyMap, Area2D imageArea)
+        private unsafe void FillMinSequence(int[] minSequence, ZsImage energyMap, Area2D imageArea)
         {
             if (energyMap == null)
                 throw new ArgumentNullException();
@@ -172,7 +158,7 @@ namespace SeamCarving2
             }
         }
 
-        private static Func<int, bool> CreateIndexValidator(Area2D area, int mappedWidth)
+        private Func<int, bool> CreateIndexValidator(Area2D area, int mappedWidth)
         {
             int[] allowedIndexes = new int[area.ElementsCount];
             area.FillMappedPointsIndexes(allowedIndexes, mappedWidth);
@@ -181,7 +167,7 @@ namespace SeamCarving2
             return isValudIndex;
         }
 
-        private static unsafe int FindMinEnergySequenceStart(ZsImage energyMap, Area2D imageArea)
+        private unsafe int FindMinEnergySequenceStart(ZsImage energyMap, Area2D imageArea)
         {
             if (energyMap == null)
                 throw new ArgumentNullException();
@@ -221,12 +207,12 @@ namespace SeamCarving2
             return minEnergyIndex;
         }
 
-        private static bool IsRectangle(Area2D imageArea)
+        private bool IsRectangle(Area2D imageArea)
         {
             return (imageArea.Bound.Width - imageArea.Bound.X) * (imageArea.Bound.Height - imageArea.Bound.Y) == imageArea.ElementsCount;
         }
 
-        private static void Update(double[] energyMap, int[] xsToRemove, Area2D area, int width, int height, int componentsAmount)
+        private void Update(double[] energyMap, int[] xsToRemove, Area2D area, int width, int height, int componentsAmount)
         {
             const byte neighboursAmount = 3;
             int[] neighboursX = new int[neighboursAmount];
@@ -326,7 +312,7 @@ namespace SeamCarving2
             }
         }
 
-        private static Func<int, bool> GetIndexValidator(Area2D area, int width)
+        private Func<int, bool> GetIndexValidator(Area2D area, int width)
         {
             var allowedIndecies = new int[area.ElementsCount];
             area.FillMappedPointsIndexes(allowedIndecies, width);
@@ -335,7 +321,7 @@ namespace SeamCarving2
             return isValidIndex;
         }
 
-        private static void UpdateEnergy(double[] energyMap, Dictionary<int, double> xsToUpdateNow, Func<int, int> xToAbsIndex)
+        private void UpdateEnergy(double[] energyMap, Dictionary<int, double> xsToUpdateNow, Func<int, int> xToAbsIndex)
         {
             var xsToUpdateOrdered = xsToUpdateNow
                 .OrderBy(v => v.Key);
@@ -346,7 +332,7 @@ namespace SeamCarving2
             }
         }
 
-        private static double FindMinContributeValue(int[] nxs, double[] energyMap, int width, int componentsAmount, int y,
+        private double FindMinContributeValue(int[] nxs, double[] energyMap, int width, int componentsAmount, int y,
             Func<int, bool> isValidIndex)
         {
             double[] contributingValues = new double[3];
@@ -368,7 +354,7 @@ namespace SeamCarving2
             return minContributer;
         }
 
-        private static void FillValues(Dictionary<int, double> xsToUpdateLater, double[] energyMap, int width, int y, int componentsAmount)
+        private void FillValues(Dictionary<int, double> xsToUpdateLater, double[] energyMap, int width, int y, int componentsAmount)
         {
             for (int i = 0; i < xsToUpdateLater.Count; i++)
             {
@@ -377,7 +363,7 @@ namespace SeamCarving2
             }
         }
 
-        private static void FillXsToUpdateLater(Dictionary<int, double> xsToUpdateLater, Dictionary<int, double> xsToUpdateNow, Func<int, bool> isValidX)
+        private void FillXsToUpdateLater(Dictionary<int, double> xsToUpdateLater, Dictionary<int, double> xsToUpdateNow, Func<int, bool> isValidX)
         {
             var Xs = xsToUpdateNow
                 .Select(kvp => kvp.Key)
@@ -398,7 +384,7 @@ namespace SeamCarving2
             }
         }
 
-        private static void FillXs(int[] nxs, int xToRemove, int x)
+        private void FillXs(int[] nxs, int xToRemove, int x)
         {
             if (nxs.Length != 3)
                 throw new ArgumentException();
@@ -423,7 +409,7 @@ namespace SeamCarving2
             }
         }
 
-        private static void RemoveElement(double[] energyMap, int x, int topRowY, int width, int componentsAmount)
+        private void RemoveElement(double[] energyMap, int x, int topRowY, int width, int componentsAmount)
         {
             int dstPointIndex = topRowY * width + x;
             int srcPointIndex = dstPointIndex + 1;
