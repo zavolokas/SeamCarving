@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Zavolokas.Arrays;
 using Zavolokas.Structures;
 
-namespace SeamCarving2
+namespace Zavolokas.SeamCarving
 {
     public static class Extensions
     {
