@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29326.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeamCarving", "SeamCarving\SeamCarving.csproj", "{91F954DD-DB98-4BA0-8B8C-2B2B7CAA0F1F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{7D533BE1-9DD5-4843-965F-138E78B4058A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleRemove", "Samples\SimpleRemove\SimpleRemove.csproj", "{423662FF-6FD4-40B3-85BC-51148007F6F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +19,16 @@ Global
 		{91F954DD-DB98-4BA0-8B8C-2B2B7CAA0F1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91F954DD-DB98-4BA0-8B8C-2B2B7CAA0F1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91F954DD-DB98-4BA0-8B8C-2B2B7CAA0F1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{423662FF-6FD4-40B3-85BC-51148007F6F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{423662FF-6FD4-40B3-85BC-51148007F6F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{423662FF-6FD4-40B3-85BC-51148007F6F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{423662FF-6FD4-40B3-85BC-51148007F6F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{423662FF-6FD4-40B3-85BC-51148007F6F0} = {7D533BE1-9DD5-4843-965F-138E78B4058A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {62131771-6F9E-4611-A235-ADCCC1AF954A}

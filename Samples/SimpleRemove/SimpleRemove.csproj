@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Zavolokas.GdiExtensions" Version="2.0.0.5" />
+    <PackageReference Include="Zavolokas.Utils" Version="2.0.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\SeamCarving\SeamCarving.csproj" />
+  </ItemGroup>
+
+</Project>

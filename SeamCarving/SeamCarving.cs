@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using Zavolokas.Structures;
 
-namespace SeamCarving2
+namespace Zavolokas.SeamCarving
 {
     public class SeamCarving
     {
