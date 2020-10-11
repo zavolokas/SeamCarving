@@ -7,11 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="Zavolokas.GdiExtensions" Version="2.0.0.5" />
+    <PackageReference Include="Zavolokas.SeamCarving" Version="1.0.0" />
     <PackageReference Include="Zavolokas.Utils" Version="2.0.0.7" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\SeamCarving\SeamCarving.csproj" />
   </ItemGroup>
 
 </Project>
