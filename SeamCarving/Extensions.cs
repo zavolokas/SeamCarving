@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Zavolokas.Arrays;
 using Zavolokas.Structures;
+using Zavolokas.Arrays;
 
 namespace Zavolokas.SeamCarving
 {
